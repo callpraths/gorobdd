@@ -67,13 +67,47 @@ func TestBDDFromTuplesChecksTupleLengths(t *testing.T) {
 	}
 }
 
-func ExampleTrivialBDDBasicOps() {
+// TODO: Convert to table driven tests.
+func TestTrivialBDDEqual(t *testing.T) {
+	if ! Equal(True([]NodeLabel{}), True([]NodeLabel{})) {
+		t.Error("True != True")
+	}
+	if ! Equal(False([]NodeLabel{}), False([]NodeLabel{})) {
+		t.Error("False != False")
+	}
+	if Equal(False([]NodeLabel{}), True([]NodeLabel{})) {
+		t.Error("False == True")
+	}
+	if Equal(True([]NodeLabel{}), False([]NodeLabel{})) {
+		t.Error("True != False")
+	}
+}
+
+func TestTrivialBDDBasicOps(t *testing.T) {
 	bt := True([]NodeLabel{})
 	bf := False([]NodeLabel{})
-	// TODO
-	fmt.Println(bt)
-	fmt.Println(bf)
-	// Output: 
-	// T
-	// F
+	if ! Equal(And(bt, bt), bt) {
+		t.Error("And(True, True) != True")
+	}
+	if ! Equal(Or(bt, bt), bt) {
+		t.Error("Or(True, True) != True")
+	}
+	if ! Equal(And(bf, bf), bf) {
+		t.Error("And(False, False) != False")
+	}
+	if ! Equal(Or(bf, bf), bf) {
+		t.Error("Or(False, False) != False")
+	}
+	if ! Equal(And(bt, bf), bf) {
+		t.Error("And(True, False) != False")
+	}
+	if ! Equal(And(bf, bt), bf) {
+		t.Error("And(False, True) != False")
+	}
+	if ! Equal(Or(bt, bf), bt) {
+		t.Error("Or(True, False) != True")
+	}
+	if ! Equal(Or(bf, bt), bt) {
+		t.Error("Or(False, True) != True")
+	}
 }

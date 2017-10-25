@@ -2,6 +2,7 @@ package gorobdd
 
 import (
 	"fmt"
+	"reflect"
 )
 
 type NodeLabel string
@@ -48,6 +49,30 @@ func True(voc []NodeLabel) (*BDD) {
 	return &BDD{voc, uniform(len(voc), true)}
 }
 
+func Equal(a *BDD, b *BDD) bool {
+	return a.Equal(b)
+}
+
+func And(a *BDD, b *BDD) *BDD {
+	return a.And(b)
+}
+
+func Or(a *BDD, b *BDD) *BDD {
+	return a.Or(b)
+}
+
+func (a *BDD) Equal(b *BDD) bool {
+	return reflect.DeepEqual(a, b)
+}
+
+func (a *BDD) And(b *BDD) *BDD {
+	return &BDD{a.Vocabulary, a.node.And(b.node)}
+}
+
+func (a *BDD) Or(b *BDD) *BDD {
+	return &BDD{a.Vocabulary, a.node.Or(b.node)}
+}
+
 func uniform(depth int, v bool) *node {
 	if depth == 0 {
 		return &node {
@@ -58,6 +83,20 @@ func uniform(depth int, v bool) *node {
 	return &node {
 		Type: internalNodeType,
 		internalNode: internalNode{True: uniform(depth - 1, v), False: uniform(depth - 1, v)},
+	}
+}
+
+func (a *node) And(b*node) *node {
+	return &node{
+		Type: leafNodeType,
+		leafNode: leafNode{ a.Value && b.Value },
+	}
+}
+
+func (a *node) Or(b*node) *node {
+	return &node{
+		Type: leafNodeType,
+		leafNode: leafNode{ a.Value || b.Value },
 	}
 }
 
