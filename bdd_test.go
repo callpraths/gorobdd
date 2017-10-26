@@ -2,15 +2,16 @@ package gorobdd
 
 import (
 	"fmt"
+	"github.com/callpraths/gorobdd/internal/node"
 	"testing"
 )
 
 func ExamplePrintLeaf() {
 	fmt.Println(&BDD{
-		[]NodeLabel{},
-		&node{
-			Type: leafNodeType,
-			leafNode: leafNode{ true },
+		[]string{},
+		&node.Node{
+			Type: node.LeafType,
+			Leaf: node.Leaf{ true },
 		},
 	})
 	// Output: T
@@ -18,17 +19,17 @@ func ExamplePrintLeaf() {
 
 func ExamplePrintInternal() {
 	fmt.Println(&BDD{
-		[]NodeLabel{"a"},
-		&node{
-			Type: internalNodeType,
-			internalNode: internalNode {
-				True: &node{
-					Type: leafNodeType,
-					leafNode: leafNode{ false },
+		[]string{"a"},
+		&node.Node{
+			Type: node.InternalType,
+			Internal: node.Internal {
+				True: &node.Node{
+					Type: node.LeafType,
+					Leaf: node.Leaf{ false },
 				},
-				False: &node{
-					Type: leafNodeType,
-					leafNode: leafNode{ true },
+				False: &node.Node{
+					Type: node.LeafType,
+					Leaf: node.Leaf{ true },
 				},
 			},
 		},
@@ -37,31 +38,31 @@ func ExamplePrintInternal() {
 }
 
 func ExampleTrivialBDDFromTuples() {
-	v, _ := FromTuples([]NodeLabel{}, [][]bool{})
+	v, _ := FromTuples([]string{}, [][]bool{})
 	fmt.Println(v)
 	// Output: F
 }
 
 func ExampleFalseBDDFromTuples() {
-	v, _ := FromTuples([]NodeLabel{"a"}, [][]bool{})
+	v, _ := FromTuples([]string{"a"}, [][]bool{})
 	fmt.Println(v)
 	// Output: (a/T: F, a/F: F)
 }
 
 func ExampleBDDFromSingleTuple() {
-	v, _ := FromTuples([]NodeLabel{"a", "b"}, [][]bool{{true, false}})
+	v, _ := FromTuples([]string{"a", "b"}, [][]bool{{true, false}})
 	fmt.Println(v)
 	// Output: (a/T: (b/T: F, b/F: T), a/F: (b/T: F, b/F: F))
 }
 
 func ExampleBDDFromTuples() {
-	v, _ := FromTuples([]NodeLabel{"a", "b"}, [][]bool{{true, false}, {false, true}})
+	v, _ := FromTuples([]string{"a", "b"}, [][]bool{{true, false}, {false, true}})
 	fmt.Println(v)
 	// Output: (a/T: (b/T: F, b/F: T), a/F: (b/T: T, b/F: F))
 }
 
 func TestBDDFromTuplesChecksTupleLengths(t *testing.T) {
-	v, e := FromTuples([]NodeLabel{"a", "b"}, [][]bool{{true}})
+	v, e := FromTuples([]string{"a", "b"}, [][]bool{{true}})
 	if e == nil {
 		t.Error("Unexpected BDD from tuples: %v", v)
 	}
@@ -72,11 +73,11 @@ func TestBinaryOpsCheckVocabulary(t *testing.T) {
 		lhs *BDD
 		rhs *BDD
 	}{
-		{True([]NodeLabel{"a"}), True([]NodeLabel{"a", "b"})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"a"})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"b", "a"})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"a", "a"})},
+		{True([]string{"a"}), True([]string{"a", "b"})},
+		{True([]string{"a", "b"}), True([]string{"a"})},
+		{True([]string{"a", "b"}), True([]string{})},
+		{True([]string{"a", "b"}), True([]string{"b", "a"})},
+		{True([]string{"a", "b"}), True([]string{"a", "a"})},
 	}
 	for _, tt := range tests {
 		if _, e := Equal(tt.lhs, tt.rhs); e == nil {
@@ -91,7 +92,7 @@ func TestBinaryOpsCheckVocabulary(t *testing.T) {
 	}
 }
 
-func fromTuplesNoError(t *testing.T, v []NodeLabel, tu [][]bool) *BDD {
+func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *BDD {
 	b, e := FromTuples(v, tu)
 	if e != nil {
 		t.Fatalf("FromTuples(%v, %v) returned error: %v", v, tu, e)
@@ -105,22 +106,22 @@ func TestBDDEqual(t *testing.T) {
 		rhs *BDD
 		eq bool
 	}{
-		{True([]NodeLabel{}), True([]NodeLabel{}), true},
-		{False([]NodeLabel{}), False([]NodeLabel{}), true},
-		{True([]NodeLabel{}), False([]NodeLabel{}), false},
-		{False([]NodeLabel{}), True([]NodeLabel{}), false},
-		{True([]NodeLabel{"a"}), True([]NodeLabel{"a"}), true},
-		{False([]NodeLabel{"a"}), False([]NodeLabel{"a"}), true},
-		{True([]NodeLabel{"a"}), False([]NodeLabel{"a"}), false},
-		{False([]NodeLabel{"a"}), True([]NodeLabel{"a"}), false},
+		{True([]string{}), True([]string{}), true},
+		{False([]string{}), False([]string{}), true},
+		{True([]string{}), False([]string{}), false},
+		{False([]string{}), True([]string{}), false},
+		{True([]string{"a"}), True([]string{"a"}), true},
+		{False([]string{"a"}), False([]string{"a"}), true},
+		{True([]string{"a"}), False([]string{"a"}), false},
+		{False([]string{"a"}), True([]string{"a"}), false},
 		{
-			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{true, false}}),
-			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{true, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
 			true,
 		},
 		{
-			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{true, false}}),
-			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{false, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{false, false}}),
 			false,
 		},
 	}
@@ -142,10 +143,10 @@ func TestTrivialBDDBinaryOps(t *testing.T) {
 		and *BDD
 		or *BDD
 	} {
-		{True([]NodeLabel{}), True([]NodeLabel{}), True([]NodeLabel{}), True([]NodeLabel{})},
-		{True([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{}), True([]NodeLabel{})},
-		{False([]NodeLabel{}), True([]NodeLabel{}), False([]NodeLabel{}), True([]NodeLabel{})},
-		{False([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{})},
+		{True([]string{}), True([]string{}), True([]string{}), True([]string{})},
+		{True([]string{}), False([]string{}), False([]string{}), True([]string{})},
+		{False([]string{}), True([]string{}), False([]string{}), True([]string{})},
+		{False([]string{}), False([]string{}), False([]string{}), False([]string{})},
 	}
 	for _, tt := range tests {
 		var and, or *BDD
@@ -181,8 +182,8 @@ func TestTrivialBDDNot(t *testing.T) {
 		in *BDD
 		ans *BDD
 	} {
-		{True([]NodeLabel{}), False([]NodeLabel{})},
-		{False([]NodeLabel{}), True([]NodeLabel{})},
+		{True([]string{}), False([]string{})},
+		{False([]string{}), True([]string{})},
 	}
 	for _, tt := range tests {
 		ans, e1 := Not(tt.in)

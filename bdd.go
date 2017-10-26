@@ -2,10 +2,9 @@ package gorobdd
 
 import (
 	"fmt"
+	"github.com/callpraths/gorobdd/internal/node"
 	"reflect"
 )
-
-type NodeLabel string
 
 // Bdd, or Binary Decision Diagram is a balanced binary tree, with branches labelled True and False.
 // The leafs are also labeled True and Fal
@@ -13,22 +12,22 @@ type NodeLabel string
 // The order in which vocabulary names match the plys can be changed.
 type BDD struct {
 	// Names for all the plys.
-	Vocabulary []NodeLabel
-	*node
+	Vocabulary []string
+	*node.Node
 }
 
 
 func (b BDD) String() string {
-	return b.node.String(b.Vocabulary)
+	return b.Node.String(b.Vocabulary)
 }
 
-func FromTuples(voc []NodeLabel, tuples [][]bool)  (*BDD, error) {
+func FromTuples(voc []string, tuples [][]bool)  (*BDD, error) {
 	bdd := False(voc)
 	for _, t:= range tuples {
 		if len(t) != len(voc) {
 			return nil, fmt.Errorf("Length of tuple %v does not match vocabulary (len: %d)", t, len(voc))
 		}
-		p := bdd.node
+		p := bdd.Node
 		for _, b := range t {
 			if b {
 				p = p.True
@@ -41,12 +40,12 @@ func FromTuples(voc []NodeLabel, tuples [][]bool)  (*BDD, error) {
 	return bdd, nil
 }
 
-func False(voc []NodeLabel) (*BDD) {
-	return &BDD{voc, uniform(len(voc), false)}
+func False(voc []string) (*BDD) {
+	return &BDD{voc, node.Uniform(len(voc), false)}
 }
 
-func True(voc []NodeLabel) (*BDD) {
-	return &BDD{voc, uniform(len(voc), true)}
+func True(voc []string) (*BDD) {
+	return &BDD{voc, node.Uniform(len(voc), true)}
 }
 
 func Equal(a *BDD, b *BDD) (bool, error) {
@@ -76,95 +75,17 @@ func (a *BDD) And(b *BDD) (*BDD, error) {
 	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in And: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
-	return &BDD{a.Vocabulary, a.node.And(b.node)}, nil
+	return &BDD{a.Vocabulary, a.Node.And(b.Node)}, nil
 }
 
 func (a *BDD) Or(b *BDD) (*BDD, error) {
 	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in Or: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
-	return &BDD{a.Vocabulary, a.node.Or(b.node)}, nil
+	return &BDD{a.Vocabulary, a.Node.Or(b.Node)}, nil
 }
 
 func (a *BDD) Not() (*BDD, error) {
-	return &BDD{a.Vocabulary, a.node.Not()}, nil
+	return &BDD{a.Vocabulary, a.Node.Not()}, nil
 }
 
-func uniform(depth int, v bool) *node {
-	if depth == 0 {
-		return &node {
-			Type: leafNodeType,
-			leafNode: leafNode { v },
-		}
-	}
-	return &node {
-		Type: internalNodeType,
-		internalNode: internalNode{True: uniform(depth - 1, v), False: uniform(depth - 1, v)},
-	}
-}
-
-func (a *node) And(b*node) *node {
-	return &node{
-		Type: leafNodeType,
-		leafNode: leafNode{ a.Value && b.Value },
-	}
-}
-
-func (a *node) Or(b*node) *node {
-	return &node{
-		Type: leafNodeType,
-		leafNode: leafNode{ a.Value || b.Value },
-	}
-}
-
-func (a *node) Not() *node {
-	return &node {
-		Type: leafNodeType,
-		leafNode: leafNode{ ! a.Value },
-	}
-}
-
-type nodeType int
-
-const (
-	internalNodeType nodeType = iota
-	leafNodeType
-)
-
-type node struct {
-	Type nodeType
-	internalNode
-	leafNode
-}
-
-type internalNode struct {
-	True *node
-	False *node
-}
-
-type leafNode struct {
-	Value bool
-}
-
-func (n leafNode) String() string {
-	if n.Value {
-		return "T"
-	} else {
-		return "F"
-	}
-}
-
-func (n internalNode) String(v []NodeLabel) string {
-	return fmt.Sprintf("(%v/T: %v, %v/F: %v)", v[0], n.True.String(v[1:]), v[0], n.False.String(v[1:]))
-}
-
-func (n node) String(v []NodeLabel) string {
-	switch(n.Type) {
-	case internalNodeType:
-		return n.internalNode.String(v)
-	case leafNodeType:
-		return n.leafNode.String()
-	default:
-		return fmt.Sprintf("Garbage node type: %v", n.Type)
-	}
-}
