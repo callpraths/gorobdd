@@ -49,7 +49,7 @@ func True(voc []NodeLabel) (*BDD) {
 	return &BDD{voc, uniform(len(voc), true)}
 }
 
-func Equal(a *BDD, b *BDD) bool {
+func Equal(a *BDD, b *BDD) (bool, error) {
 	return a.Equal(b)
 }
 
@@ -61,12 +61,15 @@ func Or(a *BDD, b *BDD) (*BDD, error) {
 	return a.Or(b)
 }
 
-func Not(a *BDD) *BDD {
+func Not(a *BDD) (*BDD, error) {
 	return a.Not()
 }
 
-func (a *BDD) Equal(b *BDD) bool {
-	return reflect.DeepEqual(a, b)
+func (a *BDD) Equal(b *BDD) (bool, error) {
+	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
+		return false, fmt.Errorf("Mismatched vocabularies in And: %v, %v", a.Vocabulary, b.Vocabulary)
+	}
+	return reflect.DeepEqual(a, b), nil
 }
 
 func (a *BDD) And(b *BDD) (*BDD, error) {
@@ -83,8 +86,8 @@ func (a *BDD) Or(b *BDD) (*BDD, error) {
 	return &BDD{a.Vocabulary, a.node.Or(b.node)}, nil
 }
 
-func (a *BDD) Not() *BDD {
-	return &BDD{a.Vocabulary, a.node.Not()}
+func (a *BDD) Not() (*BDD, error) {
+	return &BDD{a.Vocabulary, a.node.Not()}, nil
 }
 
 func uniform(depth int, v bool) *node {

@@ -67,7 +67,31 @@ func TestBDDFromTuplesChecksTupleLengths(t *testing.T) {
 	}
 }
 
-func TestTrivialBDDEqual(t *testing.T) {
+func TestBinaryOpsCheckVocabulary(t *testing.T) {
+	var tests = []struct{
+		lhs *BDD
+		rhs *BDD
+	}{
+		{True([]NodeLabel{"a"}), True([]NodeLabel{"a", "b"})},
+		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"a"})},
+		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{})},
+		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"b", "a"})},
+		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"a", "a"})},
+	}
+	for _, tt := range tests {
+		if _, e := Equal(tt.lhs, tt.rhs); e == nil {
+			t.Errorf("No error raised from And(%v, %v)", tt.lhs, tt.rhs)
+		}
+		if _, e := And(tt.lhs, tt.rhs); e == nil {
+			t.Errorf("No error raised from And(%v, %v)", tt.lhs, tt.rhs)
+		}
+		if _, e := Or(tt.lhs, tt.rhs); e == nil {
+			t.Errorf("No error raised from Or(%v, %v)", tt.lhs, tt.rhs)
+		}
+	}
+}
+
+func TestBDDEqual(t *testing.T) {
 	var tests = []struct {
 		lhs *BDD
 		rhs *BDD
@@ -80,7 +104,10 @@ func TestTrivialBDDEqual(t *testing.T) {
 
 	}
 	for _, tt := range tests {
-		eq := Equal(tt.lhs, tt.rhs)
+		eq, e := Equal(tt.lhs, tt.rhs)
+		if e != nil {
+			t.Errorf("Equal(%v, %v) failed: %v", tt.lhs, tt.rhs, e)
+		}
 		if eq != tt.eq {
 			t.Errorf("Equal(%v, %v) = %v, want %v", tt.lhs, tt.rhs, eq, tt.eq)
 		}
@@ -100,18 +127,29 @@ func TestTrivialBDDBinaryOps(t *testing.T) {
 		{False([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{})},
 	}
 	for _, tt := range tests {
-		and, e := And(tt.lhs, tt.rhs)
+		var and, or *BDD
+		var eq bool
+		var e error
+		and, e = And(tt.lhs, tt.rhs)
 		if e != nil {
 			t.Errorf("And(%v, %v) returned error %v", tt.lhs, tt.rhs, e)
 		}
-		if ! Equal(and, tt.and) {
+		eq, e = Equal(and, tt.and)
+		if e != nil {
+			t.Errorf("And(%v, %v) returned error %v", and, tt.and, e)
+		}
+		if ! eq {
 			t.Errorf("And(%v, %v) = %v, want %v", tt.lhs, tt.rhs, and, tt.and)
 		}
-		or, e := Or(tt.lhs, tt.rhs)
+		or, e = Or(tt.lhs, tt.rhs)
 		if e != nil {
 			t.Errorf("Or(%v, %v) returned error %v", tt.lhs, tt.rhs, e)
 		}
-		if ! Equal(or, tt.or) {
+		eq, e = Equal(or, tt.or)
+		if e != nil {
+			t.Errorf("And(%v, %v) returned error %v", and, tt.and, e)
+		}
+		if ! eq {
 			t.Errorf("Or(%v, %v) = %v, want %v", tt.lhs, tt.rhs, or, tt.or)
 		}
 	}
@@ -126,30 +164,16 @@ func TestTrivialBDDNot(t *testing.T) {
 		{False([]NodeLabel{}), True([]NodeLabel{})},
 	}
 	for _, tt := range tests {
-		ans := Not(tt.in)
-		if ! Equal(ans, tt.ans) {
+		ans, e1 := Not(tt.in)
+		if e1 != nil {
+			t.Errorf("Not(%v) returned error %v", tt.in, e1)
+		}
+		eq, e2 := Equal(ans, tt.ans)
+		if e2 != nil {
+			t.Errorf("Equal(%v, %v) returned error %v", ans, tt.ans, e2)
+		}
+		if ! eq {
 			t.Errorf("Not(%v) = %v, want %v", tt.in, ans, tt.ans)
-		}
-	}
-}
-
-func TestBinaryOpsCheckVocabulary(t *testing.T) {
-	var tests = []struct{
-		lhs *BDD
-		rhs *BDD
-	}{
-		{True([]NodeLabel{"a"}), True([]NodeLabel{"a", "b"})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"a"})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"b", "a"})},
-		{True([]NodeLabel{"a", "b"}), True([]NodeLabel{"a", "a"})},
-	}
-	for _, tt := range tests {
-		if _, e := And(tt.lhs, tt.rhs); e == nil {
-			t.Errorf("No error raised from And(%v, %v)", tt.lhs, tt.rhs)
-		}
-		if _, e := Or(tt.lhs, tt.rhs); e == nil {
-			t.Errorf("No error raised from Or(%v, %v)", tt.lhs, tt.rhs)
 		}
 	}
 }
