@@ -147,6 +147,10 @@ func TestTrivialBDDBinaryOps(t *testing.T) {
 		{True([]string{}), False([]string{}), False([]string{}), True([]string{})},
 		{False([]string{}), True([]string{}), False([]string{}), True([]string{})},
 		{False([]string{}), False([]string{}), False([]string{}), False([]string{})},
+		{True([]string{"a"}), True([]string{"a"}), True([]string{"a"}), True([]string{"a"})},
+		{True([]string{"a"}), False([]string{"a"}), False([]string{"a"}), True([]string{"a"})},
+		{False([]string{"a"}), True([]string{"a"}), False([]string{"a"}), True([]string{"a"})},
+		{False([]string{"a"}), False([]string{"a"}), False([]string{"a"}), False([]string{"a"})},
 	}
 	for _, tt := range tests {
 		var and, or *BDD
