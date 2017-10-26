@@ -17,14 +17,13 @@ type BDD struct {
 	*node.Node
 }
 
-
 func (b BDD) String() string {
 	return b.Node.String(b.Vocabulary)
 }
 
-func FromTuples(voc []string, tuples [][]bool)  (*BDD, error) {
+func FromTuples(voc []string, tuples [][]bool) (*BDD, error) {
 	bdd := False(voc)
-	for _, t:= range tuples {
+	for _, t := range tuples {
 		if len(t) != len(voc) {
 			return nil, fmt.Errorf("Length of tuple %v does not match vocabulary (len: %d)", t, len(voc))
 		}
@@ -41,30 +40,30 @@ func FromTuples(voc []string, tuples [][]bool)  (*BDD, error) {
 	return bdd, nil
 }
 
-func False(voc []string) (*BDD) {
+func False(voc []string) *BDD {
 	return &BDD{voc, node.Uniform(len(voc), false)}
 }
 
-func True(voc []string) (*BDD) {
+func True(voc []string) *BDD {
 	return &BDD{voc, node.Uniform(len(voc), true)}
 }
 
 func Equal(a *BDD, b *BDD) (bool, error) {
-	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
+	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return false, fmt.Errorf("Mismatched vocabularies in Equal: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
 	return reflect.DeepEqual(a, b), nil
 }
 
 func And(a *BDD, b *BDD) (*BDD, error) {
-	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
+	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in And: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
 	return &BDD{a.Vocabulary, seq.And(a.Node, b.Node)}, nil
 }
 
 func Or(a *BDD, b *BDD) (*BDD, error) {
-	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
+	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in Or: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
 	return &BDD{a.Vocabulary, seq.Or(a.Node, b.Node)}, nil

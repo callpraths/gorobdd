@@ -18,7 +18,7 @@ type Node struct {
 }
 
 type Internal struct {
-	True *Node
+	True  *Node
 	False *Node
 }
 
@@ -27,7 +27,7 @@ type Leaf struct {
 }
 
 func (n Node) String(v []string) string {
-	switch(n.Type) {
+	switch n.Type {
 	case InternalType:
 		return n.Internal.String(v)
 	case LeafType:
@@ -51,14 +51,13 @@ func (n Internal) String(v []string) string {
 
 func Uniform(depth int, v bool) *Node {
 	if depth == 0 {
-		return &Node {
+		return &Node{
 			Type: LeafType,
-			Leaf: Leaf { v },
+			Leaf: Leaf{v},
 		}
 	}
-	return &Node {
-		Type: InternalType,
-		Internal: Internal{True: Uniform(depth - 1, v), False: Uniform(depth - 1, v)},
+	return &Node{
+		Type:     InternalType,
+		Internal: Internal{True: Uniform(depth-1, v), False: Uniform(depth-1, v)},
 	}
 }
-

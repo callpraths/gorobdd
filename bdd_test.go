@@ -11,7 +11,7 @@ func ExamplePrintLeaf() {
 		[]string{},
 		&node.Node{
 			Type: node.LeafType,
-			Leaf: node.Leaf{ true },
+			Leaf: node.Leaf{true},
 		},
 	})
 	// Output: T
@@ -22,14 +22,14 @@ func ExamplePrintInternal() {
 		[]string{"a"},
 		&node.Node{
 			Type: node.InternalType,
-			Internal: node.Internal {
+			Internal: node.Internal{
 				True: &node.Node{
 					Type: node.LeafType,
-					Leaf: node.Leaf{ false },
+					Leaf: node.Leaf{false},
 				},
 				False: &node.Node{
 					Type: node.LeafType,
-					Leaf: node.Leaf{ true },
+					Leaf: node.Leaf{true},
 				},
 			},
 		},
@@ -69,7 +69,7 @@ func TestBDDFromTuplesChecksTupleLengths(t *testing.T) {
 }
 
 func TestBinaryOpsCheckVocabulary(t *testing.T) {
-	var tests = []struct{
+	var tests = []struct {
 		lhs *BDD
 		rhs *BDD
 	}{
@@ -104,7 +104,7 @@ func TestBDDEqual(t *testing.T) {
 	var tests = []struct {
 		lhs *BDD
 		rhs *BDD
-		eq bool
+		eq  bool
 	}{
 		{True([]string{}), True([]string{}), true},
 		{False([]string{}), False([]string{}), true},
@@ -137,12 +137,12 @@ func TestBDDEqual(t *testing.T) {
 }
 
 func TestTrivialBDDBinaryOps(t *testing.T) {
-	var tests = []struct{
+	var tests = []struct {
 		lhs *BDD
 		rhs *BDD
 		and *BDD
-		or *BDD
-	} {
+		or  *BDD
+	}{
 		{True([]string{}), True([]string{}), True([]string{}), True([]string{})},
 		{True([]string{}), False([]string{}), False([]string{}), True([]string{})},
 		{False([]string{}), True([]string{}), False([]string{}), True([]string{})},
@@ -160,7 +160,7 @@ func TestTrivialBDDBinaryOps(t *testing.T) {
 		if e != nil {
 			t.Errorf("And(%v, %v) returned error %v", and, tt.and, e)
 		}
-		if ! eq {
+		if !eq {
 			t.Errorf("And(%v, %v) = %v, want %v", tt.lhs, tt.rhs, and, tt.and)
 		}
 		or, e = Or(tt.lhs, tt.rhs)
@@ -171,17 +171,17 @@ func TestTrivialBDDBinaryOps(t *testing.T) {
 		if e != nil {
 			t.Errorf("And(%v, %v) returned error %v", and, tt.and, e)
 		}
-		if ! eq {
+		if !eq {
 			t.Errorf("Or(%v, %v) = %v, want %v", tt.lhs, tt.rhs, or, tt.or)
 		}
 	}
 }
 
 func TestTrivialBDDNot(t *testing.T) {
-	var tests = []struct{
-		in *BDD
+	var tests = []struct {
+		in  *BDD
 		ans *BDD
-	} {
+	}{
 		{True([]string{}), False([]string{})},
 		{False([]string{}), True([]string{})},
 	}
@@ -194,7 +194,7 @@ func TestTrivialBDDNot(t *testing.T) {
 		if e2 != nil {
 			t.Errorf("Equal(%v, %v) returned error %v", ans, tt.ans, e2)
 		}
-		if ! eq {
+		if !eq {
 			t.Errorf("Not(%v) = %v, want %v", tt.in, ans, tt.ans)
 		}
 	}
