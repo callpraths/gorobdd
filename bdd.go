@@ -61,6 +61,10 @@ func Or(a *BDD, b *BDD) *BDD {
 	return a.Or(b)
 }
 
+func Not(a *BDD) *BDD {
+	return a.Not()
+}
+
 func (a *BDD) Equal(b *BDD) bool {
 	return reflect.DeepEqual(a, b)
 }
@@ -71,6 +75,10 @@ func (a *BDD) And(b *BDD) *BDD {
 
 func (a *BDD) Or(b *BDD) *BDD {
 	return &BDD{a.Vocabulary, a.node.Or(b.node)}
+}
+
+func (a *BDD) Not() *BDD {
+	return &BDD{a.Vocabulary, a.node.Not()}
 }
 
 func uniform(depth int, v bool) *node {
@@ -97,6 +105,13 @@ func (a *node) Or(b*node) *node {
 	return &node{
 		Type: leafNodeType,
 		leafNode: leafNode{ a.Value || b.Value },
+	}
+}
+
+func (a *node) Not() *node {
+	return &node {
+		Type: leafNodeType,
+		leafNode: leafNode{ ! a.Value },
 	}
 }
 

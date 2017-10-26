@@ -67,47 +67,62 @@ func TestBDDFromTuplesChecksTupleLengths(t *testing.T) {
 	}
 }
 
-// TODO: Convert to table driven tests.
 func TestTrivialBDDEqual(t *testing.T) {
-	if ! Equal(True([]NodeLabel{}), True([]NodeLabel{})) {
-		t.Error("True != True")
+	var tests = []struct {
+		lhs *BDD
+		rhs *BDD
+		eq bool
+	}{
+		{True([]NodeLabel{}), True([]NodeLabel{}), true},
+		{False([]NodeLabel{}), False([]NodeLabel{}), true},
+		{True([]NodeLabel{}), False([]NodeLabel{}), false},
+		{False([]NodeLabel{}), True([]NodeLabel{}), false},
+
 	}
-	if ! Equal(False([]NodeLabel{}), False([]NodeLabel{})) {
-		t.Error("False != False")
-	}
-	if Equal(False([]NodeLabel{}), True([]NodeLabel{})) {
-		t.Error("False == True")
-	}
-	if Equal(True([]NodeLabel{}), False([]NodeLabel{})) {
-		t.Error("True != False")
+	for _, tt := range tests {
+		eq := Equal(tt.lhs, tt.rhs)
+		if eq != tt.eq {
+			t.Errorf("Equal(%v, %v) = %v, want %v", tt.lhs, tt.rhs, eq, tt.eq)
+		}
 	}
 }
 
-func TestTrivialBDDBasicOps(t *testing.T) {
-	bt := True([]NodeLabel{})
-	bf := False([]NodeLabel{})
-	if ! Equal(And(bt, bt), bt) {
-		t.Error("And(True, True) != True")
+func TestTrivialBDDBinaryOps(t *testing.T) {
+	var tests = []struct{
+		lhs *BDD
+		rhs *BDD
+		and *BDD
+		or *BDD
+	} {
+		{True([]NodeLabel{}), True([]NodeLabel{}), True([]NodeLabel{}), True([]NodeLabel{})},
+		{True([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{}), True([]NodeLabel{})},
+		{False([]NodeLabel{}), True([]NodeLabel{}), False([]NodeLabel{}), True([]NodeLabel{})},
+		{False([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{}), False([]NodeLabel{})},
 	}
-	if ! Equal(Or(bt, bt), bt) {
-		t.Error("Or(True, True) != True")
+	for _, tt := range tests {
+		and := And(tt.lhs, tt.rhs)
+		if ! Equal(and, tt.and) {
+			t.Errorf("And(%v, %v) = %v, want %v", tt.lhs, tt.rhs, and, tt.and)
+		}
+		or := Or(tt.lhs, tt.rhs)
+		if ! Equal(or, tt.or) {
+			t.Errorf("Or(%v, %v) = %v, want %v", tt.lhs, tt.rhs, or, tt.or)
+		}
 	}
-	if ! Equal(And(bf, bf), bf) {
-		t.Error("And(False, False) != False")
+}
+
+func TestTrivialBDDNot(t *testing.T) {
+	var tests = []struct{
+		in *BDD
+		ans *BDD
+	} {
+		{True([]NodeLabel{}), False([]NodeLabel{})},
+		{False([]NodeLabel{}), True([]NodeLabel{})},
 	}
-	if ! Equal(Or(bf, bf), bf) {
-		t.Error("Or(False, False) != False")
-	}
-	if ! Equal(And(bt, bf), bf) {
-		t.Error("And(True, False) != False")
-	}
-	if ! Equal(And(bf, bt), bf) {
-		t.Error("And(False, True) != False")
-	}
-	if ! Equal(Or(bt, bf), bt) {
-		t.Error("Or(True, False) != True")
-	}
-	if ! Equal(Or(bf, bt), bt) {
-		t.Error("Or(False, True) != True")
+	for _, tt := range tests {
+		ans := Not(tt.in)
+		if ! Equal(ans, tt.ans) {
+			t.Errorf("Not(%v) = %v, want %v", tt.in, ans, tt.ans)
+		}
 	}
 }
