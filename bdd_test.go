@@ -91,6 +91,14 @@ func TestBinaryOpsCheckVocabulary(t *testing.T) {
 	}
 }
 
+func fromTuplesNoError(t *testing.T, v []NodeLabel, tu [][]bool) *BDD {
+	b, e := FromTuples(v, tu)
+	if e != nil {
+		t.Fatalf("FromTuples(%v, %v) returned error: %v", v, tu, e)
+	}
+	return b
+}
+
 func TestBDDEqual(t *testing.T) {
 	var tests = []struct {
 		lhs *BDD
@@ -101,7 +109,20 @@ func TestBDDEqual(t *testing.T) {
 		{False([]NodeLabel{}), False([]NodeLabel{}), true},
 		{True([]NodeLabel{}), False([]NodeLabel{}), false},
 		{False([]NodeLabel{}), True([]NodeLabel{}), false},
-
+		{True([]NodeLabel{"a"}), True([]NodeLabel{"a"}), true},
+		{False([]NodeLabel{"a"}), False([]NodeLabel{"a"}), true},
+		{True([]NodeLabel{"a"}), False([]NodeLabel{"a"}), false},
+		{False([]NodeLabel{"a"}), True([]NodeLabel{"a"}), false},
+		{
+			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{true, false}}),
+			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{true, false}}),
+			true,
+		},
+		{
+			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{true, false}}),
+			fromTuplesNoError(t, []NodeLabel{"a", "b"}, [][]bool{{false, false}}),
+			false,
+		},
 	}
 	for _, tt := range tests {
 		eq, e := Equal(tt.lhs, tt.rhs)
