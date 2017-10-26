@@ -3,6 +3,7 @@ package gorobdd
 import (
 	"fmt"
 	"github.com/callpraths/gorobdd/internal/node"
+	"github.com/callpraths/gorobdd/internal/seq"
 	"reflect"
 )
 
@@ -49,43 +50,26 @@ func True(voc []string) (*BDD) {
 }
 
 func Equal(a *BDD, b *BDD) (bool, error) {
-	return a.Equal(b)
-}
-
-func And(a *BDD, b *BDD) (*BDD, error) {
-	return a.And(b)
-}
-
-func Or(a *BDD, b *BDD) (*BDD, error) {
-	return a.Or(b)
-}
-
-func Not(a *BDD) (*BDD, error) {
-	return a.Not()
-}
-
-func (a *BDD) Equal(b *BDD) (bool, error) {
 	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return false, fmt.Errorf("Mismatched vocabularies in Equal: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
 	return reflect.DeepEqual(a, b), nil
 }
 
-func (a *BDD) And(b *BDD) (*BDD, error) {
+func And(a *BDD, b *BDD) (*BDD, error) {
 	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in And: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
-	return &BDD{a.Vocabulary, a.Node.And(b.Node)}, nil
+	return &BDD{a.Vocabulary, seq.And(a.Node, b.Node)}, nil
 }
 
-func (a *BDD) Or(b *BDD) (*BDD, error) {
+func Or(a *BDD, b *BDD) (*BDD, error) {
 	if ! reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in Or: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
-	return &BDD{a.Vocabulary, a.Node.Or(b.Node)}, nil
+	return &BDD{a.Vocabulary, seq.Or(a.Node, b.Node)}, nil
 }
 
-func (a *BDD) Not() (*BDD, error) {
-	return &BDD{a.Vocabulary, a.Node.Not()}, nil
+func Not(a *BDD) (*BDD, error) {
+	return &BDD{a.Vocabulary, seq.Not(a.Node)}, nil
 }
-
