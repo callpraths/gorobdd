@@ -59,14 +59,22 @@ func And(a *BDD, b *BDD) (*BDD, error) {
 	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in And: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
-	return &BDD{a.Vocabulary, seq.And(a.Node, b.Node)}, nil
+	r, e := seq.And(a.Node, b.Node)
+	if e != nil {
+		return nil, e
+	}
+	return &BDD{a.Vocabulary, r}, nil
 }
 
 func Or(a *BDD, b *BDD) (*BDD, error) {
 	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in Or: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
-	return &BDD{a.Vocabulary, seq.Or(a.Node, b.Node)}, nil
+	r, e := seq.Or(a.Node, b.Node)
+	if e != nil {
+		return nil, e
+	}
+	return &BDD{a.Vocabulary, r}, nil
 }
 
 func Not(a *BDD) (*BDD, error) {

@@ -64,7 +64,7 @@ func ExampleBDDFromTuples() {
 func TestBDDFromTuplesChecksTupleLengths(t *testing.T) {
 	v, e := FromTuples([]string{"a", "b"}, [][]bool{{true}})
 	if e == nil {
-		t.Error("Unexpected BDD from tuples: %v", v)
+		t.Errorf("Unexpected BDD from tuples: %v", v)
 	}
 }
 
@@ -136,7 +136,7 @@ func TestBDDEqual(t *testing.T) {
 	}
 }
 
-func TestTrivialBDDBinaryOps(t *testing.T) {
+func TestBDDBinaryOps(t *testing.T) {
 	var tests = []struct {
 		lhs *BDD
 		rhs *BDD
@@ -151,6 +151,30 @@ func TestTrivialBDDBinaryOps(t *testing.T) {
 		{True([]string{"a"}), False([]string{"a"}), False([]string{"a"}), True([]string{"a"})},
 		{False([]string{"a"}), True([]string{"a"}), False([]string{"a"}), True([]string{"a"})},
 		{False([]string{"a"}), False([]string{"a"}), False([]string{"a"}), False([]string{"a"})},
+		{
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {false, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}, {false, true}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {true, false}, {false, true}, {false, false}}),
+		},
+		{
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {false, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {false, false}}),
+		},
+		{
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {true, false}, {false, true}, {false, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {false, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {false, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {true, false}, {false, true}, {false, false}}),
+		},
+		{
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {false, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, true}, {false, false}}),
+		},
 	}
 	for _, tt := range tests {
 		var and, or *BDD
