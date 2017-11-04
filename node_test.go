@@ -135,4 +135,3 @@ func TestBDDEqual(t *testing.T) {
 		}
 	}
 }
-

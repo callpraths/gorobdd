@@ -46,7 +46,7 @@ func walk(a *node.Node, b *node.Node, op leafOp) (*node.Node, error) {
 			return fb, e2
 		}
 		return &node.Node{
-			Type: node.InternalType,
+			Type:     node.InternalType,
 			Internal: node.Internal{True: tb, False: fb},
 		}, nil
 	default:
@@ -55,9 +55,9 @@ func walk(a *node.Node, b *node.Node, op leafOp) (*node.Node, error) {
 }
 
 func orLeafOp(a node.Leaf, b node.Leaf) node.Leaf {
-	return node.Leaf{ Value: a.Value || b.Value }
+	return node.Leaf{Value: a.Value || b.Value}
 }
 
 func andLeafOp(a node.Leaf, b node.Leaf) node.Leaf {
-	return node.Leaf{ Value: a.Value && b.Value }
+	return node.Leaf{Value: a.Value && b.Value}
 }
