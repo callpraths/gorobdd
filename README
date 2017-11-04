@@ -1,1 +1,17 @@
-http://people.cs.aau.dk/~srba/courses/SV-08/material/09.pdf
+This is an evolving package for working with Reduced Ordered Binary Decision
+Diagrams. Details of the data structure can be found at:
+ - http://people.cs.aau.dk/~srba/courses/SV-08/material/09.pdf
+
+Plan of action:
+Sequential operations phase:
+ - Begin with simple BDD operations. [COMPLETE]
+ - Implement BDD --> ROBDD conversion, update operations to use this conversion
+   resulting in ROBDDs. [IN PROGRESS]
+ - Add helpers to measure operations cost in various terms:
+   - Total number of nodes at the end of the operation
+   - Maximum number of nodes during the operation
+   - Time taken per operation
+ - Implement direct ROBDD construction and optimized ROBDD --> ROBDD operations,
+ - Add comparison tests, fuzz tests for the two implementations so far.
+ - Implement concurrent implementations for these operations, and add comparison
+   tests.

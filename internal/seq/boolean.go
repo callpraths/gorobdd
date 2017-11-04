@@ -1,3 +1,7 @@
+// Package seq has sequential implementations of all BDD operations.
+// Currently these operations result in BDDs (as opposed to ROBDDs).
+// These operations will be optimized in following iterations to work
+// entirely on ROBDDs.
 package seq
 
 import (
