@@ -20,3 +20,13 @@ func ExampleReduceTrivial() {
 	// T <nil>
 	// F <nil>
 }
+
+func ExampleReduceSkipsPlies() {
+	n, _ := FromTuples(
+		[]string{"a", "b"},
+		[][]bool{{true, true}, {true, false}},
+	)
+	fmt.Println(Reduce(n))
+	// Output:
+	// (a/T: T, a/F: F) <nil>
+}
