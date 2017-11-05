@@ -29,10 +29,10 @@ type Leaf struct {
 	Value bool
 }
 
-func (n Node) String(v []string) string {
+func (n Node) String(v ...[]string) string {
 	switch n.Type {
 	case InternalType:
-		return n.Internal.String(v)
+		return n.Internal.String(v...)
 	case LeafType:
 		return n.Leaf.String()
 	default:
@@ -48,12 +48,21 @@ func (n Leaf) String() string {
 	}
 }
 
-func (n Internal) String(v []string) string {
-	return fmt.Sprintf(
-		"(%v/T: %v, %v/F: %v)",
-		v[n.Ply], n.True.String(v), v[n.Ply], n.False.String(v),
-	)
-
+func (n Internal) String(v ...[]string) string {
+	switch len(v) {
+	case 0:
+		return fmt.Sprintf(
+			"(%v/T: %v, %v/F: %v)",
+			n.Ply, n.True.String(v...), n.Ply, n.False.String(v...),
+		)
+	case 1:
+		return fmt.Sprintf(
+			"(%v/T: %v, %v/F: %v)",
+			v[0][n.Ply], n.True.String(v...), v[0][n.Ply], n.False.String(v...),
+		)
+	default:
+		return fmt.Sprintf("Unepxected vocabulary: %v", v)
+	}
 }
 
 func Uniform(depth int, v bool) *Node {
