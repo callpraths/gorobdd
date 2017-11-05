@@ -18,6 +18,9 @@ type Node struct {
 }
 
 type Internal struct {
+	// Ply is an index into the vocabular assigning this node to
+	// the corresponding variable.
+	Ply   int
 	True  *Node
 	False *Node
 }
@@ -50,14 +53,22 @@ func (n Internal) String(v []string) string {
 }
 
 func Uniform(depth int, v bool) *Node {
-	if depth == 0 {
+	return uniformHelper(0, depth, v)
+}
+
+func uniformHelper(ply int, totalPlies int, v bool) *Node {
+	if ply == totalPlies {
 		return &Node{
 			Type: LeafType,
 			Leaf: Leaf{v},
 		}
 	}
 	return &Node{
-		Type:     InternalType,
-		Internal: Internal{True: Uniform(depth-1, v), False: Uniform(depth-1, v)},
+		Type: InternalType,
+		Internal: Internal{
+			Ply:   ply,
+			True:  uniformHelper(ply+1, totalPlies, v),
+			False: uniformHelper(ply+1, totalPlies, v),
+		},
 	}
 }

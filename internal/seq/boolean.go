@@ -46,8 +46,12 @@ func walk(a *node.Node, b *node.Node, op leafOp) (*node.Node, error) {
 			return fb, e2
 		}
 		return &node.Node{
-			Type:     node.InternalType,
-			Internal: node.Internal{True: tb, False: fb},
+			Type: node.InternalType,
+			Internal: node.Internal{
+				Ply:   a.Ply,
+				True:  tb,
+				False: fb,
+			},
 		}, nil
 	default:
 		return nil, fmt.Errorf("Unexpected node type: %v in %v", a.Type, a)
