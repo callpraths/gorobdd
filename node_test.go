@@ -23,6 +23,7 @@ func ExamplePrintInternal() {
 		&node.Node{
 			Type: node.InternalType,
 			Internal: node.Internal{
+				Ply: 0,
 				True: &node.Node{
 					Type: node.LeafType,
 					Leaf: node.Leaf{false},
