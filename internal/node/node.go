@@ -49,7 +49,11 @@ func (n Leaf) String() string {
 }
 
 func (n Internal) String(v []string) string {
-	return fmt.Sprintf("(%v/T: %v, %v/F: %v)", v[0], n.True.String(v[1:]), v[0], n.False.String(v[1:]))
+	return fmt.Sprintf(
+		"(%v/T: %v, %v/F: %v)",
+		v[n.Ply], n.True.String(v), v[n.Ply], n.False.String(v),
+	)
+
 }
 
 func Uniform(depth int, v bool) *Node {

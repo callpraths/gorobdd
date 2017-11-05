@@ -38,6 +38,68 @@ func ExamplePrintInternal() {
 	// Output: (a/T: F, a/F: T)
 }
 
+func ExamplePrintUnbalanced() {
+	fmt.Println(&ROBDD{
+		[]string{"a", "b"},
+		&node.Node{
+			Type: node.InternalType,
+			Internal: node.Internal{
+				Ply: 0,
+				True: &node.Node{
+					Type: node.LeafType,
+					Leaf: node.Leaf{false},
+				},
+				False: &node.Node{
+					Type: node.InternalType,
+					Internal: node.Internal{
+						Ply: 1,
+						True: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{false},
+						},
+						False: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{true},
+						},
+					},
+				},
+			},
+		},
+	})
+	// Output: (a/T: F, a/F: (b/T: F, b/F: T))
+}
+
+func ExamplePrintPlySkipped() {
+	fmt.Println(&ROBDD{
+		[]string{"a", "b", "c"},
+		&node.Node{
+			Type: node.InternalType,
+			Internal: node.Internal{
+				Ply: 0,
+				True: &node.Node{
+					Type: node.LeafType,
+					Leaf: node.Leaf{false},
+				},
+				False: &node.Node{
+					Type: node.InternalType,
+					Internal: node.Internal{
+						Ply: 2,
+						True: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{false},
+						},
+						False: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{true},
+						},
+					},
+				},
+			},
+		},
+	})
+	// Output: (a/T: F, a/F: (c/T: F, c/F: T))
+}
+
 func ExampleTrivialBDDFromTuples() {
 	v, _ := FromTuples([]string{}, [][]bool{})
 	fmt.Println(v)
