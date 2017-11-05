@@ -6,10 +6,10 @@ import (
 
 func TestBDDBinaryOps(t *testing.T) {
 	var tests = []struct {
-		lhs *BDD
-		rhs *BDD
-		and *BDD
-		or  *BDD
+		lhs *ROBDD
+		rhs *ROBDD
+		and *ROBDD
+		or  *ROBDD
 	}{
 		{True([]string{}), True([]string{}), True([]string{}), True([]string{})},
 		{True([]string{}), False([]string{}), False([]string{}), True([]string{})},
@@ -45,7 +45,7 @@ func TestBDDBinaryOps(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		var and, or *BDD
+		var and, or *ROBDD
 		var eq bool
 		var e error
 		and, e = And(tt.lhs, tt.rhs)
@@ -75,8 +75,8 @@ func TestBDDBinaryOps(t *testing.T) {
 
 func TestTrivialBDDNot(t *testing.T) {
 	var tests = []struct {
-		in  *BDD
-		ans *BDD
+		in  *ROBDD
+		ans *ROBDD
 	}{
 		{True([]string{}), False([]string{})},
 		{False([]string{}), True([]string{})},

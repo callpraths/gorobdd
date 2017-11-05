@@ -7,7 +7,7 @@ import (
 )
 
 func ExamplePrintLeaf() {
-	fmt.Println(&BDD{
+	fmt.Println(&ROBDD{
 		[]string{},
 		&node.Node{
 			Type: node.LeafType,
@@ -18,7 +18,7 @@ func ExamplePrintLeaf() {
 }
 
 func ExamplePrintInternal() {
-	fmt.Println(&BDD{
+	fmt.Println(&ROBDD{
 		[]string{"a"},
 		&node.Node{
 			Type: node.InternalType,
@@ -64,14 +64,14 @@ func ExampleBDDFromTuples() {
 func TestBDDFromTuplesChecksTupleLengths(t *testing.T) {
 	v, e := FromTuples([]string{"a", "b"}, [][]bool{{true}})
 	if e == nil {
-		t.Errorf("Unexpected BDD from tuples: %v", v)
+		t.Errorf("Unexpected ROBDD from tuples: %v", v)
 	}
 }
 
 func TestBinaryOpsCheckVocabulary(t *testing.T) {
 	var tests = []struct {
-		lhs *BDD
-		rhs *BDD
+		lhs *ROBDD
+		rhs *ROBDD
 	}{
 		{True([]string{"a"}), True([]string{"a", "b"})},
 		{True([]string{"a", "b"}), True([]string{"a"})},
@@ -92,7 +92,7 @@ func TestBinaryOpsCheckVocabulary(t *testing.T) {
 	}
 }
 
-func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *BDD {
+func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *ROBDD {
 	b, e := FromTuples(v, tu)
 	if e != nil {
 		t.Fatalf("FromTuples(%v, %v) returned error: %v", v, tu, e)
@@ -102,8 +102,8 @@ func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *BDD {
 
 func TestBDDEqual(t *testing.T) {
 	var tests = []struct {
-		lhs *BDD
-		rhs *BDD
+		lhs *ROBDD
+		rhs *ROBDD
 		eq  bool
 	}{
 		{True([]string{}), True([]string{}), true},

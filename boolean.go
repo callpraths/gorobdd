@@ -7,7 +7,7 @@ import (
 )
 
 // And computes the conjuction of the boolean expressions corresponding to given BDDs.
-func And(a *BDD, b *BDD) (*BDD, error) {
+func And(a *ROBDD, b *ROBDD) (*ROBDD, error) {
 	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in And: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
@@ -15,11 +15,11 @@ func And(a *BDD, b *BDD) (*BDD, error) {
 	if e != nil {
 		return nil, e
 	}
-	return &BDD{a.Vocabulary, r}, nil
+	return &ROBDD{a.Vocabulary, r}, nil
 }
 
 // Or computes the disjunction of the boolean expressions corresponding to given BDDs.
-func Or(a *BDD, b *BDD) (*BDD, error) {
+func Or(a *ROBDD, b *ROBDD) (*ROBDD, error) {
 	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return nil, fmt.Errorf("Mismatched vocabularies in Or: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
@@ -27,10 +27,10 @@ func Or(a *BDD, b *BDD) (*BDD, error) {
 	if e != nil {
 		return nil, e
 	}
-	return &BDD{a.Vocabulary, r}, nil
+	return &ROBDD{a.Vocabulary, r}, nil
 }
 
-// Not computes the negation of the boolean expression corresponding to given BDD.
-func Not(a *BDD) (*BDD, error) {
-	return &BDD{a.Vocabulary, seq.Not(a.Node)}, nil
+// Not computes the negation of the boolean expression corresponding to given ROBDD.
+func Not(a *ROBDD) (*ROBDD, error) {
+	return &ROBDD{a.Vocabulary, seq.Not(a.Node)}, nil
 }
