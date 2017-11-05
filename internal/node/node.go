@@ -76,3 +76,78 @@ func uniformHelper(ply int, totalPlies int, v bool) *Node {
 		},
 	}
 }
+
+// Reduce converts the ROBDD rooted at n to the canonical reduced form.
+// Reduce is not part of the operations package because it is a transitional operation.
+// Eventually, all ROBDDs should be constructed reduced and stay in reduced form during the operations.
+func Reduce(n *Node) (*Node, error) {
+	t, f, e := findTrueFalse(n, true, true)
+	if e != nil {
+		return nil, e
+	}
+	return reduceHelper(n, t, f)
+}
+
+func reduceHelper(n *Node, t *Node, f *Node) (*Node, error) {
+	switch n.Type {
+	case LeafType:
+		if n.Value {
+			return t, nil
+		} else {
+			return f, nil
+		}
+	case InternalType:
+		var e error
+		n.True, e = reduceHelper(n.True, t, f)
+		if e != nil {
+			return nil, e
+		}
+		n.False, e = reduceHelper(n.False, t, f)
+		if e != nil {
+			return nil, e
+		}
+		if n.True == n.False {
+			return n.True, nil
+		} else {
+			return n, nil
+		}
+	default:
+		return nil, fmt.Errorf("Unexpected node type: %v", n)
+	}
+}
+
+// findTrueFalse finds a True and False leaf node to be used to replace all True/False leaves.
+func findTrueFalse(n *Node, findTrue bool, findFalse bool) (*Node, *Node, error) {
+	switch n.Type {
+	case LeafType:
+		if n.Value {
+			return n, nil, nil
+		} else {
+			return nil, n, nil
+		}
+	case InternalType:
+		tt, ft, et := findTrueFalse(n.True, findTrue, findFalse)
+		if et != nil {
+			return nil, nil, et
+		}
+		findTrue = findTrue && (tt == nil)
+		findFalse = findFalse && (ft == nil)
+		if !findTrue && !findFalse {
+			return tt, ft, nil
+		}
+
+		tf, ff, ef := findTrueFalse(n.False, findTrue, findFalse)
+		if ef != nil {
+			return nil, nil, ef
+		}
+		if tt == nil {
+			tt = tf
+		}
+		if ft == nil {
+			ft = ff
+		}
+		return tt, ft, nil
+	default:
+		return nil, nil, fmt.Errorf("Unexpected node type: %v", n)
+	}
+}

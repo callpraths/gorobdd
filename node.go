@@ -70,3 +70,12 @@ func Equal(a *ROBDD, b *ROBDD) (bool, error) {
 	}
 	return reflect.DeepEqual(a, b), nil
 }
+
+// Reduce converts an ROBDD to the the reduced canonicalized form.
+func Reduce(a *ROBDD) (*ROBDD, error) {
+	n, e := node.Reduce(a.Node)
+	if e != nil {
+		return nil, e
+	}
+	return &ROBDD{a.Vocabulary, n}, nil
+}
