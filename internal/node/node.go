@@ -11,10 +11,15 @@ const (
 	LeafType
 )
 
+type Tag interface {}
+
 type Node struct {
 	Type Type
 	Internal
 	Leaf
+	// Tag is an opaque interface allowing Walking functions to
+	// attach arbitrary metadata to the Node.
+	Tag Tag
 }
 
 type Internal struct {
@@ -30,13 +35,19 @@ type Leaf struct {
 }
 
 func (n Node) String(v ...[]string) string {
+	var ns string
 	switch n.Type {
 	case InternalType:
-		return n.Internal.String(v...)
+		ns = n.Internal.String(v...)
 	case LeafType:
-		return n.Leaf.String()
+		ns = n.Leaf.String()
 	default:
 		return fmt.Sprintf("Garbage Node type: %v", n.Type)
+	}
+	if n.Tag == nil {
+		return ns
+	} else {
+		return fmt.Sprintf("%s#%s|", ns, n.Tag)
 	}
 }
 
