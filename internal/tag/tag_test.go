@@ -1,23 +1,25 @@
-package node
+package tag
 
 import (
 	"fmt"
+	"github.com/callpraths/gorobdd/internal/node"
 )
 
-func tagWithPath(n *Node, p string) {
+func tagWithPath(n *node.Node, p string) {
 	n.Tag = p
 	switch n.Type {
-	case InternalType:
+	case node.InternalType:
 		tagWithPath(n.True, fmt.Sprintf("%s1", p))
 		tagWithPath(n.False, fmt.Sprintf("%s0", p))
 	}
 }
+
 func ExamplePathTag() {
-	n := Uniform(2, true)
+	n := node.Uniform(2, true)
 	fmt.Println(n.String())
 	tagWithPath(n, "")
 	fmt.Println(n.String())
-	CleanTags(n)
+	Clean(n)
 	fmt.Println(n.String())
 	// Output:
 	// (0/T: (1/T: T, 1/F: T), 0/F: (1/T: T, 1/F: T))
