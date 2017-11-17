@@ -2,6 +2,7 @@ package gorobdd
 
 import (
 	"testing"
+	"github.com/callpraths/gorobdd/internal/node"
 	"github.com/callpraths/gorobdd/internal/tag"
 )
 
@@ -90,6 +91,74 @@ func TestBDDEqual(t *testing.T) {
 		// Equal operations should completely ignore tags.
 		s.MarkSeen(tt.lhs.Node)
 		tfunc(tt)
+	}
+}
+
+func TestBDDEqualLogicallyNotEqualStructurally(t *testing.T) {
+	a1 := &ROBDD{
+		[]string{"a", "b"},
+		&node.Node{
+			Type: node.InternalType,
+			Internal: node.Internal{
+				Ply: 0,
+				True: &node.Node{
+					Type: node.LeafType,
+					Leaf: node.Leaf{false},
+				},
+				False: &node.Node{
+					Type: node.InternalType,
+					Internal: node.Internal{
+						Ply: 1,
+						True: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{false},
+						},
+						False: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{true},
+						},
+					},
+				},
+			},
+		},
+	}
+	tn := &node.Node {
+		Type: node.LeafType,
+		Leaf: node.Leaf{true},
+	}
+	fn := &node.Node {
+		Type: node.LeafType,
+		Leaf: node.Leaf{false},
+	}
+	bt := &node.Node {
+		Type: node.InternalType,
+		Internal: node.Internal{True:fn, False:fn},
+	}
+	bf := &node.Node {
+		Type: node.InternalType,
+		Internal: node.Internal{True:fn, False:tn},
+	}
+	a2 := &ROBDD{
+		[]string{"a", "b"},
+	        &node.Node {
+			Type: node.InternalType,
+			Internal: node.Internal{True:bt, False:bf},
+		},
+	}
+
+	eq, e := Equal(a1, a2)
+	if e != nil {
+		t.Errorf("Equal(%v, %v) failed: %v", a1, a2, e)
+	}
+	if !eq {
+		t.Errorf("Equal(%v, %v) = false, want true", a1, a2)
+	}
+	g_eq, e2 := GraphEqual(a1, a2)
+	if e2 != nil {
+		t.Errorf("Equal(%v, %v) failed: %v", a1, a2, e2)
+	}
+	if g_eq {
+		t.Errorf("GraphEqual(%v, %v) = true, want false", a1, a2)
 	}
 }
 
