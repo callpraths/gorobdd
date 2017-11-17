@@ -3,28 +3,28 @@ package stats
 import (
 	"fmt"
 	"github.com/callpraths/gorobdd/internal/node"
+	"github.com/callpraths/gorobdd/internal/tag"
 )
 
 func CountNodes(n *node.Node) (int, error) {
-	m := make(map[*node.Node]bool)
-	return countNodesHelper(n, m)
+	s := tag.NewSeenContext()
+	return countNodesHelper(n, s)
 }
 
-func countNodesHelper(n *node.Node, m map[*node.Node]bool) (int, error) {
-	_, seen := m[n]
-	if seen {
+func countNodesHelper(n *node.Node, s tag.SeenContext) (int, error) {
+	if s.IsSeen(n) {
 		return 0, nil
 	}
-	m[n] = true
+	s.MarkSeen(n)
 	switch n.Type {
 	case node.LeafType:
 		return 1, nil
 	case node.InternalType:
-		t, et := countNodesHelper(n.True, m)
+		t, et := countNodesHelper(n.True, s)
 		if et != nil {
 			return t, et
 		}
-		f, ef := countNodesHelper(n.False, m)
+		f, ef := countNodesHelper(n.False, s)
 		if ef != nil {
 			return f, ef
 		}
