@@ -1,9 +1,9 @@
 package gorobdd
 
 import (
-	"github.com/callpraths/gorobdd/internal/node"
+	"github.com/callpraths/gorobdd/internal/stats"
 )
 
 func CountNodes(b *ROBDD) (int, error) {
-	return node.CountNodes(b.Node)
+	return stats.CountNodes(b.Node)
 }

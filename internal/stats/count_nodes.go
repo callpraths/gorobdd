@@ -1,24 +1,25 @@
-package node
+package stats
 
 import (
 	"fmt"
+	"github.com/callpraths/gorobdd/internal/node"
 )
 
-func CountNodes(n *Node) (int, error) {
-	m := make(map[*Node]bool)
+func CountNodes(n *node.Node) (int, error) {
+	m := make(map[*node.Node]bool)
 	return countNodesHelper(n, m)
 }
 
-func countNodesHelper(n *Node, m map[*Node]bool) (int, error) {
+func countNodesHelper(n *node.Node, m map[*node.Node]bool) (int, error) {
 	_, seen := m[n]
 	if seen {
 		return 0, nil
 	}
 	m[n] = true
 	switch n.Type {
-	case LeafType:
+	case node.LeafType:
 		return 1, nil
-	case InternalType:
+	case node.InternalType:
 		t, et := countNodesHelper(n.True, m)
 		if et != nil {
 			return t, et
