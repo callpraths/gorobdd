@@ -11,7 +11,6 @@ package gorobdd
 import (
 	"fmt"
 	"github.com/callpraths/gorobdd/internal/node"
-	"reflect"
 )
 
 // ROBDD, or Reduced Ordered Binary Decision Diagram is a concise normalized representation of boolean formulas.
@@ -61,14 +60,6 @@ func False(voc []string) *ROBDD {
 // True returns the ROBDD with value True for the given vocabulary.
 func True(voc []string) *ROBDD {
 	return &ROBDD{voc, node.Uniform(len(voc), true)}
-}
-
-// Equal determines if two BDDs correspond to equivalent boolean expressions.
-func Equal(a *ROBDD, b *ROBDD) (bool, error) {
-	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
-		return false, fmt.Errorf("Mismatched vocabularies in Equal: %v, %v", a.Vocabulary, b.Vocabulary)
-	}
-	return reflect.DeepEqual(a, b), nil
 }
 
 // Reduce converts an ROBDD to the the reduced canonicalized form.

@@ -6,6 +6,22 @@ import (
 	"reflect"
 )
 
+// Equal determines if two ROBDDs correspond to equivalent boolean expressions.
+func Equal(a *ROBDD, b *ROBDD) (bool, error) {
+	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
+		return false, fmt.Errorf("Mismatched vocabularies in GraphEqual: %v, %v", a.Vocabulary, b.Vocabulary)
+	}
+	return reflect.DeepEqual(a, b), nil
+}
+
+// GraphEqual determines if two ROBDDs are structurally identical. GraphEqual implies Equal.
+func GraphEqual(a *ROBDD, b *ROBDD) (bool, error) {
+	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
+		return false, fmt.Errorf("Mismatched vocabularies in Equal: %v, %v", a.Vocabulary, b.Vocabulary)
+	}
+	return reflect.DeepEqual(a, b), nil
+}
+
 // And computes the conjuction of the boolean expressions corresponding to given BDDs.
 func And(a *ROBDD, b *ROBDD) (*ROBDD, error) {
 	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {

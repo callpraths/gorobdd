@@ -41,23 +41,26 @@ func TestBDDEqual(t *testing.T) {
 		lhs *ROBDD
 		rhs *ROBDD
 		eq  bool
+		g_eq bool
 	}{
-		{True([]string{}), True([]string{}), true},
-		{False([]string{}), False([]string{}), true},
-		{True([]string{}), False([]string{}), false},
-		{False([]string{}), True([]string{}), false},
-		{True([]string{"a"}), True([]string{"a"}), true},
-		{False([]string{"a"}), False([]string{"a"}), true},
-		{True([]string{"a"}), False([]string{"a"}), false},
-		{False([]string{"a"}), True([]string{"a"}), false},
+		{True([]string{}), True([]string{}), true, true},
+		{False([]string{}), False([]string{}), true, true},
+		{True([]string{}), False([]string{}), false, false},
+		{False([]string{}), True([]string{}), false, false},
+		{True([]string{"a"}), True([]string{"a"}), true, true},
+		{False([]string{"a"}), False([]string{"a"}), true, true},
+		{True([]string{"a"}), False([]string{"a"}), false, false},
+		{False([]string{"a"}), True([]string{"a"}), false, false},
 		{
 			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
 			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
+			true,
 			true,
 		},
 		{
 			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
 			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{false, false}}),
+			false,
 			false,
 		},
 	}
@@ -69,9 +72,17 @@ func TestBDDEqual(t *testing.T) {
 		if eq != tt.eq {
 			t.Errorf("Equal(%v, %v) = %v, want %v", tt.lhs, tt.rhs, eq, tt.eq)
 		}
+		g_eq, e2 := GraphEqual(tt.lhs, tt.rhs)
+		if e2 != nil {
+			t.Errorf("GraphEqual(%v, %v) failed: %v", tt.lhs, tt.rhs, e2)
+		}
+		if g_eq != tt.g_eq {
+			t.Errorf("GraphEqual(%v, %v) = %v, want %v", tt.lhs, tt.rhs, g_eq, tt.g_eq)
+		}
 	}
 }
-func TestBDDBinaryOps(t *testing.T) {
+
+func TestBDDBooleanOps(t *testing.T) {
 	var tests = []struct {
 		lhs *ROBDD
 		rhs *ROBDD
