@@ -1,9 +1,9 @@
 package gorobdd
 
 import (
-	"testing"
 	"github.com/callpraths/gorobdd/internal/node"
 	"github.com/callpraths/gorobdd/internal/tag"
+	"testing"
 )
 
 func TestBinaryOpsCheckVocabulary(t *testing.T) {
@@ -40,12 +40,12 @@ func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *ROBDD {
 
 func TestBDDEqual(t *testing.T) {
 	type testCase struct {
-		lhs *ROBDD
-		rhs *ROBDD
-		eq  bool
+		lhs  *ROBDD
+		rhs  *ROBDD
+		eq   bool
 		g_eq bool
 	}
-	tcs := []testCase {
+	tcs := []testCase{
 		{True([]string{}), True([]string{}), true, true},
 		{False([]string{}), False([]string{}), true, true},
 		{True([]string{}), False([]string{}), false, false},
@@ -68,7 +68,7 @@ func TestBDDEqual(t *testing.T) {
 		},
 	}
 
-	tfunc := func (tt testCase) {
+	tfunc := func(tt testCase) {
 		eq, e := Equal(tt.lhs, tt.rhs)
 		if e != nil {
 			t.Errorf("Equal(%v, %v) failed: %v", tt.lhs, tt.rhs, e)
@@ -122,27 +122,27 @@ func TestBDDEqualLogicallyNotEqualStructurally(t *testing.T) {
 			},
 		},
 	}
-	tn := &node.Node {
+	tn := &node.Node{
 		Type: node.LeafType,
 		Leaf: node.Leaf{true},
 	}
-	fn := &node.Node {
+	fn := &node.Node{
 		Type: node.LeafType,
 		Leaf: node.Leaf{false},
 	}
-	bt := &node.Node {
-		Type: node.InternalType,
-		Internal: node.Internal{True:fn, False:fn},
+	bt := &node.Node{
+		Type:     node.InternalType,
+		Internal: node.Internal{Ply: 1, True: fn, False: fn},
 	}
-	bf := &node.Node {
-		Type: node.InternalType,
-		Internal: node.Internal{True:fn, False:tn},
+	bf := &node.Node{
+		Type:     node.InternalType,
+		Internal: node.Internal{Ply: 1, True: fn, False: tn},
 	}
 	a2 := &ROBDD{
 		[]string{"a", "b"},
-	        &node.Node {
-			Type: node.InternalType,
-			Internal: node.Internal{True:bt, False:bf},
+		&node.Node{
+			Type:     node.InternalType,
+			Internal: node.Internal{Ply: 0, True: bt, False: bf},
 		},
 	}
 
