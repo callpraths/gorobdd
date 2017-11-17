@@ -2,6 +2,7 @@ package gorobdd
 
 import (
 	"testing"
+	"github.com/callpraths/gorobdd/internal/tag"
 )
 
 func TestBinaryOpsCheckVocabulary(t *testing.T) {
@@ -37,12 +38,13 @@ func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *ROBDD {
 }
 
 func TestBDDEqual(t *testing.T) {
-	var tests = []struct {
+	type testCase struct {
 		lhs *ROBDD
 		rhs *ROBDD
 		eq  bool
 		g_eq bool
-	}{
+	}
+	tcs := []testCase {
 		{True([]string{}), True([]string{}), true, true},
 		{False([]string{}), False([]string{}), true, true},
 		{True([]string{}), False([]string{}), false, false},
@@ -64,7 +66,8 @@ func TestBDDEqual(t *testing.T) {
 			false,
 		},
 	}
-	for _, tt := range tests {
+
+	tfunc := func (tt testCase) {
 		eq, e := Equal(tt.lhs, tt.rhs)
 		if e != nil {
 			t.Errorf("Equal(%v, %v) failed: %v", tt.lhs, tt.rhs, e)
@@ -79,6 +82,14 @@ func TestBDDEqual(t *testing.T) {
 		if g_eq != tt.g_eq {
 			t.Errorf("GraphEqual(%v, %v) = %v, want %v", tt.lhs, tt.rhs, g_eq, tt.g_eq)
 		}
+	}
+
+	s := tag.NewSeenContext()
+	for _, tt := range tcs {
+		tfunc(tt)
+		// Equal operations should completely ignore tags.
+		s.MarkSeen(tt.lhs.Node)
+		tfunc(tt)
 	}
 }
 

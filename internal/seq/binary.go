@@ -11,6 +11,30 @@ import (
 
 type leafOp func(a node.Leaf, b node.Leaf) node.Leaf
 
+func GraphEqual(a *node.Node, b *node.Node) (bool, error) {
+	if a.Type != b.Type {
+		return false, fmt.Errorf("Mismatched bdd path heights: %v, %v", a, b)
+	}
+	switch a.Type {
+	case node.LeafType:
+		return a.Value == b.Value, nil
+	case node.InternalType:
+		var eq bool
+		var e error
+		eq, e = GraphEqual(a.True, b.True)
+		if e != nil {
+			return false, e
+		}
+		if !eq {
+			return false, nil
+		}
+		return GraphEqual(a.False, b.False)
+	default:
+		return false, fmt.Errorf("Unexpected node type: %v in %v", a.Type, a)
+	}
+	
+}
+
 func And(a *node.Node, b *node.Node) (*node.Node, error) {
 	return walk(a, b, andLeafOp)
 }
