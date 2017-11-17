@@ -4,6 +4,73 @@ import (
 	"testing"
 )
 
+func TestBinaryOpsCheckVocabulary(t *testing.T) {
+	var tests = []struct {
+		lhs *ROBDD
+		rhs *ROBDD
+	}{
+		{True([]string{"a"}), True([]string{"a", "b"})},
+		{True([]string{"a", "b"}), True([]string{"a"})},
+		{True([]string{"a", "b"}), True([]string{})},
+		{True([]string{"a", "b"}), True([]string{"b", "a"})},
+		{True([]string{"a", "b"}), True([]string{"a", "a"})},
+	}
+	for _, tt := range tests {
+		if _, e := Equal(tt.lhs, tt.rhs); e == nil {
+			t.Errorf("No error raised from Equal(%v, %v)", tt.lhs, tt.rhs)
+		}
+		if _, e := And(tt.lhs, tt.rhs); e == nil {
+			t.Errorf("No error raised from And(%v, %v)", tt.lhs, tt.rhs)
+		}
+		if _, e := Or(tt.lhs, tt.rhs); e == nil {
+			t.Errorf("No error raised from Or(%v, %v)", tt.lhs, tt.rhs)
+		}
+	}
+}
+
+func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *ROBDD {
+	b, e := FromTuples(v, tu)
+	if e != nil {
+		t.Fatalf("FromTuples(%v, %v) returned error: %v", v, tu, e)
+	}
+	return b
+}
+
+func TestBDDEqual(t *testing.T) {
+	var tests = []struct {
+		lhs *ROBDD
+		rhs *ROBDD
+		eq  bool
+	}{
+		{True([]string{}), True([]string{}), true},
+		{False([]string{}), False([]string{}), true},
+		{True([]string{}), False([]string{}), false},
+		{False([]string{}), True([]string{}), false},
+		{True([]string{"a"}), True([]string{"a"}), true},
+		{False([]string{"a"}), False([]string{"a"}), true},
+		{True([]string{"a"}), False([]string{"a"}), false},
+		{False([]string{"a"}), True([]string{"a"}), false},
+		{
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
+			true,
+		},
+		{
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{true, false}}),
+			fromTuplesNoError(t, []string{"a", "b"}, [][]bool{{false, false}}),
+			false,
+		},
+	}
+	for _, tt := range tests {
+		eq, e := Equal(tt.lhs, tt.rhs)
+		if e != nil {
+			t.Errorf("Equal(%v, %v) failed: %v", tt.lhs, tt.rhs, e)
+		}
+		if eq != tt.eq {
+			t.Errorf("Equal(%v, %v) = %v, want %v", tt.lhs, tt.rhs, eq, tt.eq)
+		}
+	}
+}
 func TestBDDBinaryOps(t *testing.T) {
 	var tests = []struct {
 		lhs *ROBDD
