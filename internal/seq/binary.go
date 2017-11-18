@@ -13,26 +13,68 @@ type leafOp func(a node.Leaf, b node.Leaf) node.Leaf
 
 func GraphEqual(a *node.Node, b *node.Node) (bool, error) {
 	if a.Type != b.Type {
-		return false, fmt.Errorf("Mismatched bdd path heights: %v, %v", a, b)
+		return false, nil
 	}
 	switch a.Type {
 	case node.LeafType:
 		return a.Value == b.Value, nil
 	case node.InternalType:
-		var eq bool
-		var e error
-		eq, e = GraphEqual(a.True, b.True)
-		if e != nil {
-			return false, e
-		}
-		if !eq {
+		if a.Ply != b.Ply {
 			return false, nil
+		}
+		if eq, e := GraphEqual(a.True, b.True); e != nil || !eq {
+			return eq, e
 		}
 		return GraphEqual(a.False, b.False)
 	default:
 		return false, fmt.Errorf("Unexpected node type: %v in %v", a.Type, a)
 	}
-	
+
+}
+
+// Equal determines if the BDDs rooted at the two nodes are logically equal.
+// We can not use Reduce here since Equal will be used in testing Reduce.
+func Equal(a *node.Node, b *node.Node) (bool, error) {
+	switch a.Type {
+	case node.LeafType:
+		switch b.Type {
+		case node.LeafType:
+			return a.Value == b.Value, nil
+		case node.InternalType:
+			return equalSkippingRoot(b, a)
+		default:
+			return false, fmt.Errorf("Unknown node type: %v", b)
+		}
+	case node.InternalType:
+		switch b.Type {
+		case node.LeafType:
+			return equalSkippingRoot(a, b)
+		case node.InternalType:
+			if a.Ply == b.Ply {
+				if r, e := Equal(a.True, b.True); e != nil || !r {
+					return r, e
+				}
+				return Equal(a.False, b.False)
+			} else if a.Ply > b.Ply {
+				return equalSkippingRoot(a, b)
+			} else { // a.Ply < b.Ply
+				return equalSkippingRoot(b, a)
+			}
+		default:
+			return false, fmt.Errorf("Unknown node type: %v", b)
+		}
+	default:
+		return false, fmt.Errorf("Unknown node type: %v", a)
+	}
+}
+
+// equalSkippingRoot skips one level on tall and compares the rest with short.
+func equalSkippingRoot(tall *node.Node, short *node.Node) (bool, error) {
+	// tall and short are both node.InternalType
+	if r, e := Equal(tall.True, tall.False); e != nil || !r {
+		return r, e
+	}
+	return Equal(tall.True, short)
 }
 
 func And(a *node.Node, b *node.Node) (*node.Node, error) {

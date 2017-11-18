@@ -11,7 +11,7 @@ func Equal(a *ROBDD, b *ROBDD) (bool, error) {
 	if !reflect.DeepEqual(a.Vocabulary, b.Vocabulary) {
 		return false, fmt.Errorf("Mismatched vocabularies in GraphEqual: %v, %v", a.Vocabulary, b.Vocabulary)
 	}
-	return seq.GraphEqual(a.Node, b.Node)
+	return seq.Equal(a.Node, b.Node)
 }
 
 // GraphEqual determines if two ROBDDs are structurally identical. GraphEqual implies Equal.
