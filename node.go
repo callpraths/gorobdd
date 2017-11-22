@@ -64,7 +64,8 @@ func True(voc []string) *ROBDD {
 	return &ROBDD{voc, node.Uniform(len(voc), true)}
 }
 
-// Reduce converts an ROBDD to the the reduced canonicalized form.
+// Reduce converts an ROBDD in place to the the reduced canonicalized form.
+// Returns the reduced ROBDD.
 func Reduce(a *ROBDD) (*ROBDD, error) {
 	n, e := node.Reduce(a.Node)
 	if e != nil {
