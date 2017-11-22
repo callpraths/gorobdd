@@ -4,15 +4,20 @@ import (
 	"fmt"
 )
 
+// Type is the type of a node.
 type Type int
 
+// Exhaustive set of valid Type's.
 const (
 	InternalType Type = iota
 	LeafType
 )
 
-type Tag interface {}
+// Tag is an opaque tag that can be attached to a node.
+// See also internal/tag
+type Tag interface{}
 
+// Node is a single node in the DAG comprising a ROBDD.
 type Node struct {
 	Type Type
 	Internal
@@ -22,6 +27,7 @@ type Node struct {
 	Tag Tag
 }
 
+// Internal is an internal BDD node.
 type Internal struct {
 	// Ply is an index into the vocabular assigning this node to
 	// the corresponding variable.
@@ -30,10 +36,12 @@ type Internal struct {
 	False *Node
 }
 
+// Leaf is a leaf BDD node.
 type Leaf struct {
 	Value bool
 }
 
+// String strigifies a BDD n labeling the plies with the given vocabulary v.
 func (n Node) String(v ...[]string) string {
 	var ns string
 	switch n.Type {
@@ -46,19 +54,19 @@ func (n Node) String(v ...[]string) string {
 	}
 	if n.Tag == nil {
 		return ns
-	} else {
-		return fmt.Sprintf("%s#%s|", ns, n.Tag)
 	}
+	return fmt.Sprintf("%s#%s|", ns, n.Tag)
 }
 
+// String strgifies a leaf BDD node.
 func (n Leaf) String() string {
 	if n.Value {
 		return "T"
-	} else {
-		return "F"
 	}
+	return "F"
 }
 
+// String stringifies an internal BDD node labaeling the plies with the given vocabulary v.
 func (n Internal) String(v ...[]string) string {
 	switch len(v) {
 	case 0:
@@ -76,6 +84,8 @@ func (n Internal) String(v ...[]string) string {
 	}
 }
 
+// Uniform returns a non-reduced balanced tree BDD of given depth where each leaf node
+// has the given boolean value.
 func Uniform(depth int, v bool) *Node {
 	return uniformHelper(0, depth, v)
 }
@@ -113,9 +123,8 @@ func reduceHelper(n *Node, t *Node, f *Node) (*Node, error) {
 	case LeafType:
 		if n.Value {
 			return t, nil
-		} else {
-			return f, nil
 		}
+		return f, nil
 	case InternalType:
 		var e error
 		n.True, e = reduceHelper(n.True, t, f)
@@ -128,9 +137,8 @@ func reduceHelper(n *Node, t *Node, f *Node) (*Node, error) {
 		}
 		if n.True == n.False {
 			return n.True, nil
-		} else {
-			return n, nil
 		}
+		return n, nil
 	default:
 		return nil, fmt.Errorf("Unexpected node type: %v", n)
 	}
@@ -142,9 +150,8 @@ func findTrueFalse(n *Node, findTrue bool, findFalse bool) (*Node, *Node, error)
 	case LeafType:
 		if n.Value {
 			return n, nil, nil
-		} else {
-			return nil, n, nil
 		}
+		return nil, n, nil
 	case InternalType:
 		tt, ft, et := findTrueFalse(n.True, findTrue, findFalse)
 		if et != nil {

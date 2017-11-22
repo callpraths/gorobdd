@@ -10,17 +10,49 @@ func TestCountTreeStructure(t *testing.T) {
 		b *ROBDD
 		c int
 	}{
-		{&ROBDD{[]string{""}, &node.Node{Type: node.LeafType, Leaf: node.Leaf{true}}}, 1},
-		{&ROBDD{[]string{""}, &node.Node{Type: node.LeafType, Leaf: node.Leaf{false}}}, 1},
+		{
+			&ROBDD{
+				[]string{""},
+				&node.Node{
+					Type: node.LeafType,
+					Leaf: node.Leaf{
+						Value: true,
+					},
+				},
+			},
+			1,
+		},
+		{
+			&ROBDD{
+				[]string{""},
+				&node.Node{
+					Type: node.LeafType,
+					Leaf: node.Leaf{
+						Value: false,
+					},
+				},
+			},
+			1,
+		},
 		{
 			&ROBDD{
 				[]string{"a"},
 				&node.Node{
 					Type: node.InternalType,
 					Internal: node.Internal{
-						Ply:   0,
-						True:  &node.Node{Type: node.LeafType, Leaf: node.Leaf{true}},
-						False: &node.Node{Type: node.LeafType, Leaf: node.Leaf{false}},
+						Ply: 0,
+						True: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{
+								Value: true,
+							},
+						},
+						False: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{
+								Value: false,
+							},
+						},
 					},
 				},
 			},
@@ -36,12 +68,27 @@ func TestCountTreeStructure(t *testing.T) {
 						True: &node.Node{
 							Type: node.InternalType,
 							Internal: node.Internal{
-								Ply:   1,
-								True:  &node.Node{Type: node.LeafType, Leaf: node.Leaf{false}},
-								False: &node.Node{Type: node.LeafType, Leaf: node.Leaf{false}},
+								Ply: 1,
+								True: &node.Node{
+									Type: node.LeafType,
+									Leaf: node.Leaf{
+										Value: false,
+									},
+								},
+								False: &node.Node{
+									Type: node.LeafType,
+									Leaf: node.Leaf{
+										Value: false,
+									},
+								},
 							},
 						},
-						False: &node.Node{Type: node.LeafType, Leaf: node.Leaf{false}},
+						False: &node.Node{
+							Type: node.LeafType,
+							Leaf: node.Leaf{
+								Value: false,
+							},
+						},
 					},
 				},
 			},
@@ -60,8 +107,12 @@ func TestCountTreeStructure(t *testing.T) {
 }
 
 func TestCountSharedLeaves(t *testing.T) {
-	tn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{true}}
-	fn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{false}}
+	tn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{
+		Value: true,
+	}}
+	fn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{
+		Value: false,
+	}}
 	var tests = []struct {
 		b *ROBDD
 		c int
@@ -106,8 +157,12 @@ func TestCountSharedLeaves(t *testing.T) {
 }
 
 func TestCountSharedInternal(t *testing.T) {
-	tn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{true}}
-	fn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{false}}
+	tn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{
+		Value: true,
+	}}
+	fn := &node.Node{Type: node.LeafType, Leaf: node.Leaf{
+		Value: false,
+	}}
 	in := &node.Node{
 		Type:     node.InternalType,
 		Internal: node.Internal{Ply: 2, True: tn, False: fn},

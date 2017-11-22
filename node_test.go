@@ -11,7 +11,9 @@ func ExamplePrintLeaf() {
 		[]string{},
 		&node.Node{
 			Type: node.LeafType,
-			Leaf: node.Leaf{true},
+			Leaf: node.Leaf{
+				Value: true,
+			},
 		},
 	})
 	// Output: T
@@ -26,11 +28,15 @@ func ExamplePrintInternal() {
 				Ply: 0,
 				True: &node.Node{
 					Type: node.LeafType,
-					Leaf: node.Leaf{false},
+					Leaf: node.Leaf{
+						Value: false,
+					},
 				},
 				False: &node.Node{
 					Type: node.LeafType,
-					Leaf: node.Leaf{true},
+					Leaf: node.Leaf{
+						Value: true,
+					},
 				},
 			},
 		},
@@ -47,7 +53,9 @@ func ExamplePrintUnbalanced() {
 				Ply: 0,
 				True: &node.Node{
 					Type: node.LeafType,
-					Leaf: node.Leaf{false},
+					Leaf: node.Leaf{
+						Value: false,
+					},
 				},
 				False: &node.Node{
 					Type: node.InternalType,
@@ -55,11 +63,15 @@ func ExamplePrintUnbalanced() {
 						Ply: 1,
 						True: &node.Node{
 							Type: node.LeafType,
-							Leaf: node.Leaf{false},
+							Leaf: node.Leaf{
+								Value: false,
+							},
 						},
 						False: &node.Node{
 							Type: node.LeafType,
-							Leaf: node.Leaf{true},
+							Leaf: node.Leaf{
+								Value: true,
+							},
 						},
 					},
 				},
@@ -78,7 +90,9 @@ func ExamplePrintPlySkipped() {
 				Ply: 0,
 				True: &node.Node{
 					Type: node.LeafType,
-					Leaf: node.Leaf{false},
+					Leaf: node.Leaf{
+						Value: false,
+					},
 				},
 				False: &node.Node{
 					Type: node.InternalType,
@@ -86,11 +100,15 @@ func ExamplePrintPlySkipped() {
 						Ply: 2,
 						True: &node.Node{
 							Type: node.LeafType,
-							Leaf: node.Leaf{false},
+							Leaf: node.Leaf{
+								Value: false,
+							},
 						},
 						False: &node.Node{
 							Type: node.LeafType,
-							Leaf: node.Leaf{true},
+							Leaf: node.Leaf{
+								Value: true,
+							},
 						},
 					},
 				},

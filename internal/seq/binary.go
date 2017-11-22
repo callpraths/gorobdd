@@ -11,6 +11,9 @@ import (
 
 type leafOp func(a node.Leaf, b node.Leaf) node.Leaf
 
+// GraphEqual determines if the BDDs rooted at the given nodes have identical
+// graph structures. For this purpose, Leaf nodes with the same value are considered
+// equal.
 func GraphEqual(a *node.Node, b *node.Node) (bool, error) {
 	if a.Type != b.Type {
 		return false, nil
@@ -77,18 +80,23 @@ func equalSkippingRoot(tall *node.Node, short *node.Node) (bool, error) {
 	return Equal(tall.True, short)
 }
 
+// And returns a BDD that represents the conjunction of the given BDDs.
 func And(a *node.Node, b *node.Node) (*node.Node, error) {
 	return walk(a, b, andLeafOp)
 }
 
+// Or returns a BDD that represents the disjunction of the given BDDs.
 func Or(a *node.Node, b *node.Node) (*node.Node, error) {
 	return walk(a, b, orLeafOp)
 }
 
+// Not returns a BDD that represents the negation of the given BDD.
 func Not(a *node.Node) *node.Node {
 	return &node.Node{
 		Type: node.LeafType,
-		Leaf: node.Leaf{!a.Value},
+		Leaf: node.Leaf{
+			Value: !a.Value,
+		},
 	}
 }
 

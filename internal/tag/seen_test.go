@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func ExampleSeenFormat() {
+func ExamplePrintSeen() {
 	c := NewSeenContext()
 	n := node.Uniform(0, true)
 	fmt.Println(n.String())
@@ -19,7 +19,7 @@ func ExampleSeenFormat() {
 
 func TestIsSeen(t *testing.T) {
 	c := NewSeenContext()
-	var tests = []struct{
+	var tests = []struct {
 		n *node.Node
 		s bool
 	}{

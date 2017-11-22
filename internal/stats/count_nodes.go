@@ -6,6 +6,8 @@ import (
 	"github.com/callpraths/gorobdd/internal/tag"
 )
 
+// CountNodes counts the total number of unique graph nodes reachable from The
+// given root node.
 func CountNodes(n *node.Node) (int, error) {
 	s := tag.NewSeenContext()
 	return countNodesHelper(n, s)

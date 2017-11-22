@@ -40,10 +40,10 @@ func fromTuplesNoError(t *testing.T, v []string, tu [][]bool) *ROBDD {
 
 func TestBDDEqual(t *testing.T) {
 	type testCase struct {
-		lhs  *ROBDD
-		rhs  *ROBDD
-		eq   bool
-		g_eq bool
+		lhs *ROBDD
+		rhs *ROBDD
+		eq  bool
+		gEq bool
 	}
 	tcs := []testCase{
 		{True([]string{}), True([]string{}), true, true},
@@ -76,12 +76,12 @@ func TestBDDEqual(t *testing.T) {
 		if eq != tt.eq {
 			t.Errorf("Equal(%v, %v) = %v, want %v", tt.lhs, tt.rhs, eq, tt.eq)
 		}
-		g_eq, e2 := GraphEqual(tt.lhs, tt.rhs)
+		gEq, e2 := GraphEqual(tt.lhs, tt.rhs)
 		if e2 != nil {
 			t.Errorf("GraphEqual(%v, %v) failed: %v", tt.lhs, tt.rhs, e2)
 		}
-		if g_eq != tt.g_eq {
-			t.Errorf("GraphEqual(%v, %v) = %v, want %v", tt.lhs, tt.rhs, g_eq, tt.g_eq)
+		if gEq != tt.gEq {
+			t.Errorf("GraphEqual(%v, %v) = %v, want %v", tt.lhs, tt.rhs, gEq, tt.gEq)
 		}
 	}
 
@@ -103,7 +103,9 @@ func TestBDDEqualLogicallyNotEqualStructurally(t *testing.T) {
 				Ply: 0,
 				True: &node.Node{
 					Type: node.LeafType,
-					Leaf: node.Leaf{false},
+					Leaf: node.Leaf{
+						Value: false,
+					},
 				},
 				False: &node.Node{
 					Type: node.InternalType,
@@ -111,11 +113,15 @@ func TestBDDEqualLogicallyNotEqualStructurally(t *testing.T) {
 						Ply: 1,
 						True: &node.Node{
 							Type: node.LeafType,
-							Leaf: node.Leaf{false},
+							Leaf: node.Leaf{
+								Value: false,
+							},
 						},
 						False: &node.Node{
 							Type: node.LeafType,
-							Leaf: node.Leaf{true},
+							Leaf: node.Leaf{
+								Value: true,
+							},
 						},
 					},
 				},
@@ -124,11 +130,15 @@ func TestBDDEqualLogicallyNotEqualStructurally(t *testing.T) {
 	}
 	tn := &node.Node{
 		Type: node.LeafType,
-		Leaf: node.Leaf{true},
+		Leaf: node.Leaf{
+			Value: true,
+		},
 	}
 	fn := &node.Node{
 		Type: node.LeafType,
-		Leaf: node.Leaf{false},
+		Leaf: node.Leaf{
+			Value: false,
+		},
 	}
 	bt := &node.Node{
 		Type:     node.InternalType,
@@ -153,11 +163,11 @@ func TestBDDEqualLogicallyNotEqualStructurally(t *testing.T) {
 	if !eq {
 		t.Errorf("Equal(%v, %v) = false, want true", a1, a2)
 	}
-	g_eq, e2 := GraphEqual(a1, a2)
+	gEq, e2 := GraphEqual(a1, a2)
 	if e2 != nil {
 		t.Errorf("Equal(%v, %v) failed: %v", a1, a2, e2)
 	}
-	if g_eq {
+	if gEq {
 		t.Errorf("GraphEqual(%v, %v) = true, want false", a1, a2)
 	}
 }

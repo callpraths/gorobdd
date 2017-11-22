@@ -36,7 +36,7 @@ type seenTag struct {
 
 func (t seenTag) String() string {
 	if t.marked {
- 		return "s"
-        }
+		return "s"
+	}
 	return ""
 }

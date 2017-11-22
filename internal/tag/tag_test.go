@@ -14,7 +14,7 @@ func tagWithPath(n *node.Node, p string) {
 	}
 }
 
-func ExamplePathTag() {
+func ExampleTag() {
 	n := node.Uniform(2, true)
 	fmt.Println(n.String())
 	tagWithPath(n, "")

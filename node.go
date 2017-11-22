@@ -13,11 +13,13 @@ import (
 	"github.com/callpraths/gorobdd/internal/node"
 )
 
-// ROBDD, or Reduced Ordered Binary Decision Diagram is a concise normalized representation of boolean formulas.
-// It is a DAG. Internal nodes have two branches labeled True and False, and unique True and/or False leafs.
-// Additionally, each internal node is labeled with a variable from a given vocabulary, and variables from
-// the vocabulary occur in a fixed order (skipping some) on any path down the DAG.
-// The order in which vocabulary names match the plys can be changed.
+// ROBDD is short for Reduced Ordered Binary Decision Diagram, a concise
+// normalized representation of boolean formulas.  It is a DAG. Internal nodes
+// have two branches labeled True and False, and unique True and/or False
+// leafs.  Additionally, each internal node is labeled with a variable from a
+// given vocabulary, and variables from the vocabulary occur in a fixed order
+// (skipping some) on any path down the DAG.  The order in which vocabulary
+// names match the plys can be changed.
 type ROBDD struct {
 	// Names for all the plys.
 	// Order of vocabulary is significant.
