@@ -54,13 +54,6 @@ func FromTuples(voc []string, tuples [][]bool) (*ROBDD, error) {
 	return bdd, nil
 }
 
-// Clone creates and returns another ROBDD with identical graph to the one given.
-func Clone(b *ROBDD) *ROBDD {
-	v := make([]string, len(b.Vocabulary))
-	copy(v, b.Vocabulary)
-	return &ROBDD{v, node.Clone(b.Node)}
-}
-
 // False returns the ROBDD with value False for the given vocabulary.
 func False(voc []string) *ROBDD {
 	return &ROBDD{voc, node.Uniform(len(voc), false)}

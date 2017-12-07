@@ -90,21 +90,6 @@ func Uniform(depth int, v bool) *Node {
 	return uniformHelper(0, depth, v)
 }
 
-// Clone creates and returns another ROBDD graph with identical graph to the one given.
-func Clone(n *Node) *Node {
-	return &Node{
-		Type: n.Type,
-		Internal: Internal{
-			Ply:   n.Internal.Ply,
-			True:  Clone(n.Internal.True),
-			False: Clone(n.Internal.False),
-		},
-		Leaf: Leaf{
-			Value: n.Leaf.Value,
-		},
-	}
-}
-
 func uniformHelper(ply int, totalPlies int, v bool) *Node {
 	if ply == totalPlies {
 		return &Node{
